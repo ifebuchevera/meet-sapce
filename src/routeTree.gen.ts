@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as AppUploadRouteImport } from './routes/_app.upload'
 import { Route as AppTasksRouteImport } from './routes/_app.tasks'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
@@ -33,6 +34,11 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppUploadRoute = AppUploadRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsRoute
   '/tasks': typeof AppTasksRoute
   '/upload': typeof AppUploadRoute
+  '/api/chat': typeof ApiChatRoute
   '/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
   '/meetings/': typeof AppMeetingsIndexRoute
 }
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsRoute
   '/tasks': typeof AppTasksRoute
   '/upload': typeof AppUploadRoute
+  '/api/chat': typeof ApiChatRoute
   '/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
   '/meetings': typeof AppMeetingsIndexRoute
 }
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsRoute
   '/_app/tasks': typeof AppTasksRoute
   '/_app/upload': typeof AppUploadRoute
+  '/api/chat': typeof ApiChatRoute
   '/_app/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
   '/_app/meetings/': typeof AppMeetingsIndexRoute
 }
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/upload'
+    | '/api/chat'
     | '/meetings/$meetingId'
     | '/meetings/'
   fileRoutesByTo: FileRoutesByTo
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tasks'
     | '/upload'
+    | '/api/chat'
     | '/meetings/$meetingId'
     | '/meetings'
   id:
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/_app/tasks'
     | '/_app/upload'
+    | '/api/chat'
     | '/_app/meetings/$meetingId'
     | '/_app/meetings/'
   fileRoutesById: FileRoutesById
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/upload': {
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

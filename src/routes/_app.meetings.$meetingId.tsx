@@ -7,7 +7,6 @@ import {
   MessageCircle,
   Send,
   Sparkles,
-  X,
 } from "lucide-react";
 import { getMeetingById, type Meeting } from "@/lib/mock-data";
 import { HeroSection } from "@/components/hero-section";
@@ -17,6 +16,7 @@ import { ActionCenter } from "@/components/action-center";
 import { TranscriptViewer } from "@/components/transcript-viewer";
 import { MeetingMemory } from "@/components/meeting-memory";
 import { TimelineViewer } from "@/components/timeline-viewer";
+import { AIChat } from "@/components/ai-chat";
 
 export const Route = createFileRoute("/_app/meetings/$meetingId")({
   loader: ({ params }) => {
@@ -193,7 +193,13 @@ function MeetingDetailPage() {
 
       {/* AI chat sidebar */}
       {chatOpen ? (
-        <AIChatPanel onClose={() => setChatOpen(false)} meetingTitle={meeting.title} />
+        <AIChat
+          meeting={meeting}
+          decisions={meeting.decisions}
+          risks={meeting.risks}
+          opportunities={meeting.opportunities}
+          onClose={() => setChatOpen(false)}
+        />
       ) : null}
     </div>
   );
@@ -220,84 +226,5 @@ function TabButton({
     >
       {children}
     </button>
-  );
-}
-
-function AIChatPanel({
-  onClose,
-  meetingTitle,
-}: {
-  onClose: () => void;
-  meetingTitle: string;
-}) {
-  const [q, setQ] = useState("");
-  const [messages, setMessages] = useState<{ role: "user" | "ai"; text: string }[]>([
-    {
-      role: "ai",
-      text: `I've read the full transcript of "${meetingTitle}". Ask me about decisions, blockers, or what to do next.`,
-    },
-  ]);
-
-  function send(e: React.FormEvent) {
-    e.preventDefault();
-    if (!q.trim()) return;
-    setMessages((m) => [
-      ...m,
-      { role: "user", text: q },
-      {
-        role: "ai",
-        text: "Based on the transcript, the launch was moved to August 15 primarily to protect QA runway on dark mode. Marcus owns stakeholder comms — draft goes out Thursday.",
-      },
-    ]);
-    setQ("");
-  }
-
-  return (
-    <div className="fixed inset-y-0 right-0 w-full sm:w-[420px] bg-background border-l border-border shadow-2xl z-30 flex flex-col">
-      <div className="h-16 border-b border-border flex items-center justify-between px-5">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-4" strokeWidth={1.75} />
-          <p className="text-sm font-medium">Ask Clarity</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <X className="size-4" strokeWidth={1.75} />
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={
-              "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed " +
-              (m.role === "user"
-                ? "ml-auto bg-primary text-primary-foreground"
-                : "bg-surface border border-border")
-            }
-          >
-            {m.text}
-          </div>
-        ))}
-      </div>
-      <form onSubmit={send} className="p-4 border-t border-border">
-        <div className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2">
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Ask about this meeting…"
-            className="flex-1 bg-transparent text-sm outline-none"
-          />
-          <button
-            type="submit"
-            className="text-primary hover:opacity-80 disabled:opacity-40"
-            disabled={!q.trim()}
-          >
-            <Send className="size-4" strokeWidth={1.75} />
-          </button>
-        </div>
-      </form>
-    </div>
   );
 }
