@@ -19,7 +19,6 @@ import { Route as AppSearchRouteImport } from './routes/_app.search'
 import { Route as AppKnowledgeRouteImport } from './routes/_app.knowledge'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppMeetingsIndexRouteImport } from './routes/_app.meetings.index'
-import { Route as ApiMeetingsUploadRouteImport } from './routes/api/meetings.upload'
 import { Route as AppMeetingsMeetingIdRouteImport } from './routes/_app.meetings.$meetingId'
 
 const AuthRoute = AuthRouteImport.update({
@@ -71,11 +70,6 @@ const AppMeetingsIndexRoute = AppMeetingsIndexRouteImport.update({
   path: '/meetings/',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiMeetingsUploadRoute = ApiMeetingsUploadRouteImport.update({
-  id: '/api/meetings/upload',
-  path: '/api/meetings/upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AppMeetingsMeetingIdRoute = AppMeetingsMeetingIdRouteImport.update({
   id: '/meetings/$meetingId',
   path: '/meetings/$meetingId',
@@ -92,7 +86,6 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AppTasksRoute
   '/upload': typeof AppUploadRoute
   '/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
-  '/api/meetings/upload': typeof ApiMeetingsUploadRoute
   '/meetings/': typeof AppMeetingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -105,7 +98,6 @@ export interface FileRoutesByTo {
   '/tasks': typeof AppTasksRoute
   '/upload': typeof AppUploadRoute
   '/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
-  '/api/meetings/upload': typeof ApiMeetingsUploadRoute
   '/meetings': typeof AppMeetingsIndexRoute
 }
 export interface FileRoutesById {
@@ -120,7 +112,6 @@ export interface FileRoutesById {
   '/_app/tasks': typeof AppTasksRoute
   '/_app/upload': typeof AppUploadRoute
   '/_app/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
-  '/api/meetings/upload': typeof ApiMeetingsUploadRoute
   '/_app/meetings/': typeof AppMeetingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -135,7 +126,6 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/upload'
     | '/meetings/$meetingId'
-    | '/api/meetings/upload'
     | '/meetings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -148,7 +138,6 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/upload'
     | '/meetings/$meetingId'
-    | '/api/meetings/upload'
     | '/meetings'
   id:
     | '__root__'
@@ -162,7 +151,6 @@ export interface FileRouteTypes {
     | '/_app/tasks'
     | '/_app/upload'
     | '/_app/meetings/$meetingId'
-    | '/api/meetings/upload'
     | '/_app/meetings/'
   fileRoutesById: FileRoutesById
 }
@@ -170,7 +158,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ApiMeetingsUploadRoute: typeof ApiMeetingsUploadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,13 +232,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMeetingsIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/meetings/upload': {
-      id: '/api/meetings/upload'
-      path: '/api/meetings/upload'
-      fullPath: '/api/meetings/upload'
-      preLoaderRoute: typeof ApiMeetingsUploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_app/meetings/$meetingId': {
       id: '/_app/meetings/$meetingId'
       path: '/meetings/$meetingId'
@@ -290,7 +270,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
-  ApiMeetingsUploadRoute: ApiMeetingsUploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

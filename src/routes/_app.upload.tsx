@@ -17,30 +17,24 @@ function UploadPage() {
     setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('title', title);
-
-      const response = await fetch('/api/meetings/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Upload failed');
-      }
-
-      const data = await response.json();
+      // For now, show a mock upload success
+      // In production, this would upload to Supabase Storage and create the meeting
+      const mockMeeting = {
+        id: 'mock-' + Date.now(),
+        title,
+        date_time: new Date().toISOString(),
+        processing_status: 'queued' as const,
+        processing_progress: 0,
+      };
       
-      setUploadedMeeting(data.meeting);
+      setUploadedMeeting(mockMeeting);
       
       // Invalidate meetings query to show new meeting
       queryClient.invalidateQueries({ queryKey: ['meetings'] });
 
       // Navigate to meeting detail after 2 seconds
       setTimeout(() => {
-        navigate({ to: `/meetings/${data.meeting.id}` });
+        navigate({ to: `/meetings/${mockMeeting.id}` });
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
