@@ -26,6 +26,28 @@ export interface ActionItem {
   meetingTitle?: string;
 }
 
+export interface TimelineEvent {
+  id: string;
+  label: string;
+  timestamp: string;
+  type: "start" | "decision" | "action" | "risk" | "end";
+}
+
+export interface ActionCard {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  action: string;
+}
+
+export interface RelatedMeeting {
+  id: string;
+  title: string;
+  date: string;
+  participants: string[];
+}
+
 export interface Meeting {
   id: string;
   title: string;
@@ -38,10 +60,16 @@ export interface Meeting {
   summary: string;
   decisions: string[];
   risks: string[];
+  opportunities?: string[];
   transcript: TranscriptLine[];
   actionItems: ActionItem[];
   followUpEmail: string;
   followUpWhatsapp: string;
+  actionCards?: ActionCard[];
+  timelineEvents?: TimelineEvent[];
+  relatedMeetings?: RelatedMeeting[];
+  clientName?: string;
+  aiProcessedTime?: string;
 }
 
 const participants = {
@@ -62,6 +90,8 @@ export const meetings: Meeting[] = [
     participants: [participants.sarah, participants.marcus, participants.kevin],
     status: "processed",
     actionItemsCount: 12,
+    clientName: "Acme Corp",
+    aiProcessedTime: "2 minutes ago",
     summary:
       "The team aligned on shifting the launch date to August 15th to allow for final QA cycles on the dark mode implementation. Sarah confirmed the backend is ready for the new scale, and Marcus committed to leading the stakeholder comms.",
     decisions: [
@@ -72,6 +102,11 @@ export const meetings: Meeting[] = [
     risks: [
       "Stakeholder expectation on original launch date — needs comms plan by Thursday.",
       "QA capacity is thin during the last week of July.",
+    ],
+    opportunities: [
+      "Strong market demand for PWA features presents expansion opportunity.",
+      "August 15 launch window aligns perfectly with industry conference announcement.",
+      "Early adopters of Tailwind v4 can become case study for ecosystem.",
     ],
     transcript: [
       {
@@ -155,6 +190,75 @@ Sarah`,
 • Backend ready ✅
 • Marcus drafts stakeholder note by Thu
 Full notes + tasks in Clarity ↗`,
+    actionCards: [
+      {
+        id: "ac1",
+        title: "Draft Stakeholder Email",
+        description: "Generate email announcing August 15 launch delay",
+        icon: "Mail",
+        action: "Generate",
+      },
+      {
+        id: "ac2",
+        title: "Create Calendar Block",
+        description: "Add August 15 launch checkpoint to team calendar",
+        icon: "Calendar",
+        action: "Create",
+      },
+      {
+        id: "ac3",
+        title: "Generate Action Summary",
+        description: "Create concise summary of all action items",
+        icon: "FileText",
+        action: "Generate",
+      },
+    ],
+    timelineEvents: [
+      {
+        id: "te1",
+        label: "Meeting started",
+        timestamp: "10:15 AM",
+        type: "start",
+      },
+      {
+        id: "te2",
+        label: "Launch date moved to August 15",
+        timestamp: "10:42 AM",
+        type: "decision",
+      },
+      {
+        id: "te3",
+        label: "Tailwind v4 adoption approved",
+        timestamp: "11:05 AM",
+        type: "decision",
+      },
+      {
+        id: "te4",
+        label: "Marcus commits to stakeholder comms",
+        timestamp: "11:28 AM",
+        type: "action",
+      },
+      {
+        id: "te5",
+        label: "Meeting ended",
+        timestamp: "10:57 AM",
+        type: "end",
+      },
+    ],
+    relatedMeetings: [
+      {
+        id: "design-system-sprint-4",
+        title: "Design System Refactor — Sprint 4",
+        date: "2026-07-13T14:00:00Z",
+        participants: ["Ana Ribeiro", "David Park"],
+      },
+      {
+        id: "q3-strategy",
+        title: "Q3 Strategy & Hiring Planning",
+        date: "2026-07-12T09:00:00Z",
+        participants: ["Sarah Chen", "Marcus Lee", "Kevin Wu", "Ana Ribeiro", "David Park"],
+      },
+    ],
   },
   {
     id: "design-system-sprint-4",
