@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { signIn, signUp } from "@/lib/supabase/auth";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Clarity" }] }),
@@ -10,6 +11,40 @@ type Mode = "signin" | "signup";
 
 function AuthPage() {
   const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      if (mode === "signin") {
+        const { user, error: authError } = await signIn(email, password);
+        if (authError) {
+          setError(authError.message);
+        } else if (user) {
+          navigate({ to: "/dashboard" });
+        }
+      } else {
+        const { user, error: authError } = await signUp(email, password, fullName);
+        if (authError) {
+          setError(authError.message);
+        } else if (user) {
+          setError("Check your email to confirm your account");
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen grid md:grid-cols-2">
@@ -65,19 +100,46 @@ function AuthPage() {
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <form className="space-y-3">
-            {mode === "signup" ? (
-              <Input label="Full name" type="text" placeholder="Sarah Chen" />
-            ) : null}
-            <Input label="Email" type="email" placeholder="you@company.com" />
-            <Input label="Password" type="password" placeholder="••••••••" />
+          {error && (
+            <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+              {error}
+            </div>
+          )}
 
-            <Link
-              to="/dashboard"
-              className="w-full inline-flex items-center justify-center py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+          <form onSubmit={handleSubmit} className="space-y-3">
+            {mode === "signup" ? (
+              <Input
+                label="Full name"
+                type="text"
+                placeholder="Sarah Chen"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+            ) : null}
+            <Input
+              label="Email"
+              type="email"
+              placeholder="you@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center py-2.5 bg-primary text-primary-foreground rounded-full text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {mode === "signin" ? "Sign in" : "Create account"}
-            </Link>
+              {loading ? "Loading..." : mode === "signin" ? "Sign in" : "Create account"}
+            </button>
           </form>
 
           <p className="text-xs text-muted-foreground text-center">
@@ -99,10 +161,16 @@ function Input({
   label,
   type,
   placeholder,
+  value,
+  onChange,
+  required = false,
 }: {
   label: string;
   type: string;
   placeholder: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
 }) {
   return (
     <label className="block space-y-1.5">
@@ -110,6 +178,9 @@ function Input({
       <input
         type={type}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        required={required}
         className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-sm outline-none focus:border-foreground/30 transition-colors"
       />
     </label>
