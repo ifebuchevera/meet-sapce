@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppUploadRouteImport } from './routes/_app.upload'
 import { Route as AppTasksRouteImport } from './routes/_app.tasks'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppSearchRouteImport } from './routes/_app.search'
 import { Route as AppKnowledgeRouteImport } from './routes/_app.knowledge'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppMeetingsIndexRouteImport } from './routes/_app.meetings.index'
+import { Route as ApiMeetingsUploadRouteImport } from './routes/api/meetings.upload'
 import { Route as AppMeetingsMeetingIdRouteImport } from './routes/_app.meetings.$meetingId'
 
 const AuthRoute = AuthRouteImport.update({
@@ -33,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppUploadRoute = AppUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppTasksRoute = AppTasksRouteImport.update({
   id: '/tasks',
@@ -64,6 +71,11 @@ const AppMeetingsIndexRoute = AppMeetingsIndexRouteImport.update({
   path: '/meetings/',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiMeetingsUploadRoute = ApiMeetingsUploadRouteImport.update({
+  id: '/api/meetings/upload',
+  path: '/api/meetings/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppMeetingsMeetingIdRoute = AppMeetingsMeetingIdRouteImport.update({
   id: '/meetings/$meetingId',
   path: '/meetings/$meetingId',
@@ -78,7 +90,9 @@ export interface FileRoutesByFullPath {
   '/search': typeof AppSearchRoute
   '/settings': typeof AppSettingsRoute
   '/tasks': typeof AppTasksRoute
+  '/upload': typeof AppUploadRoute
   '/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
+  '/api/meetings/upload': typeof ApiMeetingsUploadRoute
   '/meetings/': typeof AppMeetingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -89,7 +103,9 @@ export interface FileRoutesByTo {
   '/search': typeof AppSearchRoute
   '/settings': typeof AppSettingsRoute
   '/tasks': typeof AppTasksRoute
+  '/upload': typeof AppUploadRoute
   '/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
+  '/api/meetings/upload': typeof ApiMeetingsUploadRoute
   '/meetings': typeof AppMeetingsIndexRoute
 }
 export interface FileRoutesById {
@@ -102,7 +118,9 @@ export interface FileRoutesById {
   '/_app/search': typeof AppSearchRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/tasks': typeof AppTasksRoute
+  '/_app/upload': typeof AppUploadRoute
   '/_app/meetings/$meetingId': typeof AppMeetingsMeetingIdRoute
+  '/api/meetings/upload': typeof ApiMeetingsUploadRoute
   '/_app/meetings/': typeof AppMeetingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -115,7 +133,9 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/tasks'
+    | '/upload'
     | '/meetings/$meetingId'
+    | '/api/meetings/upload'
     | '/meetings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -126,7 +146,9 @@ export interface FileRouteTypes {
     | '/search'
     | '/settings'
     | '/tasks'
+    | '/upload'
     | '/meetings/$meetingId'
+    | '/api/meetings/upload'
     | '/meetings'
   id:
     | '__root__'
@@ -138,7 +160,9 @@ export interface FileRouteTypes {
     | '/_app/search'
     | '/_app/settings'
     | '/_app/tasks'
+    | '/_app/upload'
     | '/_app/meetings/$meetingId'
+    | '/api/meetings/upload'
     | '/_app/meetings/'
   fileRoutesById: FileRoutesById
 }
@@ -146,6 +170,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiMeetingsUploadRoute: typeof ApiMeetingsUploadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -170,6 +195,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/upload': {
+      id: '/_app/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AppUploadRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/tasks': {
       id: '/_app/tasks'
@@ -213,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMeetingsIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/meetings/upload': {
+      id: '/api/meetings/upload'
+      path: '/api/meetings/upload'
+      fullPath: '/api/meetings/upload'
+      preLoaderRoute: typeof ApiMeetingsUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app/meetings/$meetingId': {
       id: '/_app/meetings/$meetingId'
       path: '/meetings/$meetingId'
@@ -229,6 +268,7 @@ interface AppRouteChildren {
   AppSearchRoute: typeof AppSearchRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppTasksRoute: typeof AppTasksRoute
+  AppUploadRoute: typeof AppUploadRoute
   AppMeetingsMeetingIdRoute: typeof AppMeetingsMeetingIdRoute
   AppMeetingsIndexRoute: typeof AppMeetingsIndexRoute
 }
@@ -239,6 +279,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSearchRoute: AppSearchRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppTasksRoute: AppTasksRoute,
+  AppUploadRoute: AppUploadRoute,
   AppMeetingsMeetingIdRoute: AppMeetingsMeetingIdRoute,
   AppMeetingsIndexRoute: AppMeetingsIndexRoute,
 }
@@ -249,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiMeetingsUploadRoute: ApiMeetingsUploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

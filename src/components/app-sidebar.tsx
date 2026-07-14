@@ -6,10 +6,12 @@ import {
   BookOpen,
   Search,
   Settings,
+  Upload,
 } from "lucide-react";
 
 const items = [
   { title: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { title: "Upload", to: "/upload", icon: Upload },
   { title: "Meetings", to: "/meetings", icon: Video },
   { title: "Tasks", to: "/tasks", icon: ListChecks },
   { title: "Knowledge", to: "/knowledge", icon: BookOpen },
