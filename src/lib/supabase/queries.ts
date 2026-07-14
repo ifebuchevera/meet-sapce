@@ -298,3 +298,114 @@ export async function updateProfile(
   if (error) throw error;
   return data;
 }
+
+// PROCESSING LOGS
+export async function getProcessingLogs(meetingId: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('processing_logs')
+    .select('*')
+    .eq('meeting_id', meetingId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function createProcessingLog(log: {
+  meeting_id: string;
+  step: string;
+  status: string;
+  error_message?: string;
+}) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('processing_logs')
+    .insert([log])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updateProcessingLog(
+  logId: string,
+  updates: { status?: string; error_message?: string; duration_ms?: number }
+) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('processing_logs')
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq('id', logId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// SUGGESTED EMAILS
+export async function getSuggestedEmails(meetingId: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('suggested_emails')
+    .select('*')
+    .eq('meeting_id', meetingId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function updateSuggestedEmail(
+  emailId: string,
+  updates: { sent_at?: string }
+) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('suggested_emails')
+    .update(updates)
+    .eq('id', emailId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+// SUGGESTED MESSAGES
+export async function getSuggestedMessages(meetingId: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('suggested_messages')
+    .select('*')
+    .eq('meeting_id', meetingId)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function updateSuggestedMessage(
+  messageId: string,
+  updates: { sent_at?: string }
+) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from('suggested_messages')
+    .update(updates)
+    .eq('id', messageId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
