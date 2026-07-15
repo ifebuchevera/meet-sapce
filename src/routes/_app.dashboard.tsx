@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Clock, Sparkles, Loader2 } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
-import { allActionItems, insights, meetings } from "@/lib/mock-data";
+import { useMeetings } from "@/lib/hooks/use-meetings";
+import { useActionItems } from "@/lib/hooks/use-action-items";
+import { formatDistanceToNow } from "date-fns";
 
 export const Route = createFileRoute("/_app/dashboard")({
   head: () => ({
@@ -11,13 +13,52 @@ export const Route = createFileRoute("/_app/dashboard")({
 });
 
 function DashboardPage() {
-  const today = meetings.slice(0, 2);
-  const recent = meetings.slice(0, 4);
-  const outstanding = allActionItems.filter((a) => a.status !== "done").slice(0, 5);
+  const { data: meetings, isLoading: meetingsLoading, error: meetingsError } = useMeetings();
+  const allMeetings = meetings || [];
+  
+  // Group meetings by date
+  const today = allMeetings.filter(m => {
+    const mDate = new Date(m.date_time).toLocaleDateString();
+    return mDate === new Date().toLocaleDateString();
+  }).slice(0, 2);
+  
+  const recent = allMeetings.slice(0, 4);
+
+  // Get outstanding action items from first meeting for dashboard overview
+  const firstMeetingId = allMeetings[0]?.id;
+  const { data: actionItems } = useActionItems(firstMeetingId || '');
+  const outstanding = (actionItems || []).filter((a) => a.status === 'pending').slice(0, 5);
+
+  const todayDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  if (meetingsLoading) {
+    return (
+      <>
+        <AppHeader title="Morning overview" subtitle={todayDate} />
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        </div>
+      </>
+    );
+  }
+
+  if (meetingsError) {
+    return (
+      <>
+        <AppHeader title="Morning overview" subtitle={todayDate} />
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="text-center space-y-2">
+            <p className="text-sm font-medium">Error loading meetings</p>
+            <p className="text-xs text-muted-foreground">{meetingsError.message}</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
-      <AppHeader title="Morning overview" subtitle="Tuesday, July 14" />
+      <AppHeader title="Morning overview" subtitle={todayDate} />
       <div className="max-w-6xl mx-auto p-6 md:p-8 space-y-12">
         {/* Stats */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
