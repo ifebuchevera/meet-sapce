@@ -16,7 +16,6 @@ import { ActionCenter } from "@/components/action-center";
 import { TranscriptViewer } from "@/components/transcript-viewer";
 import { MeetingMemory } from "@/components/meeting-memory";
 import { TimelineViewer } from "@/components/timeline-viewer";
-import { AIChat } from "@/components/ai-chat";
 
 export const Route = createFileRoute("/_app/meetings/$meetingId")({
   loader: ({ params }) => {
@@ -191,8 +190,8 @@ function MeetingDetailPage() {
         </section>
       </div>
 
-      {/* AI chat sidebar */}
-      {chatOpen ? (
+      {/* AI chat sidebar - coming soon */}
+      {/* {chatOpen ? (
         <AIChat
           meeting={meeting}
           decisions={meeting.decisions}
@@ -200,7 +199,7 @@ function MeetingDetailPage() {
           opportunities={meeting.opportunities}
           onClose={() => setChatOpen(false)}
         />
-      ) : null}
+      ) : null} */}
     </div>
   );
 }
